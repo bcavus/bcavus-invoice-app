@@ -24,6 +24,28 @@ services:
       USER_SERVICE_MONGO_DATABASE_USER: ${USER_SERVICE_MONGO_DATABASE_USER}
       USER_SERVICE_MONGO_DATABASE_PASSWORD: ${USER_SERVICE_MONGO_DATABASE_PASSWORD}
 
+  user-service:
+    container_name: user-service
+    build:
+      context: ./user-service
+      args:
+        ENV_PROFILE: ${USER_SERVICE_ENV_PROFILE}
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    networks:
+      - user-network
+    restart:
+      on-failure
+    depends_on:
+      - user-mongo-db
+    env_file:
+      - .env.dev
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://${USER_SERVICE_MONGO_DATABASE_USER}:${USER_SERVICE_MONGO_DATABASE_PASSWORD}@user-mongo-db
+      SPRING_DATA_MONGODB_DATABASE: ${USER_SERVICE_MONGO_DATABASE_NAME}
+      SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
+
 volumes:
   user-mongo-db:
   user-mongo-config:
