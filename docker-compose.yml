@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  user-mongo-db:
+    container_name: user-mongo-db
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/docker-entrypoint-initdb.d/mongo-user-init.sh:/docker-entrypoint-initdb.d/mongo-user-init.sh
+      - user-mongo-db:/data/db
+      - user-mongo-config:/data/configdb
+    networks:
+      - user-network
+    env_file:
+      - .env.dev
+    restart:
+      always
+    environment:
+      MONGO_INITDB_DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
+      MONGO_INITDB_ROOT_USERNAME: ${DEFAULT_MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DEFAULT_MONGO_INITDB_ROOT_PASSWORD}
+      USER_SERVICE_MONGO_DATABASE_NAME: ${USER_SERVICE_MONGO_DATABASE_NAME}
+      USER_SERVICE_MONGO_DATABASE_USER: ${USER_SERVICE_MONGO_DATABASE_USER}
+      USER_SERVICE_MONGO_DATABASE_PASSWORD: ${USER_SERVICE_MONGO_DATABASE_PASSWORD}
+
+volumes:
+  user-mongo-db:
+  user-mongo-config:
+
+networks:
+  user-network:
