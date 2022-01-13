@@ -16,8 +16,10 @@ public class ExceptionHelper {
     private static final Logger logger = LoggerFactory.getLogger(ExceptionHelper.class);
 
     @ExceptionHandler({
+            IllegalArgumentException.class,
             GenericServiceException.class,
-            UserAlreadyExistsException.class
+            UserAlreadyExistsException.class,
+            NoSuchUserFound.class
     })
     public ResponseEntity<APIResponse> handleRuntimeServiceExceptions(RuntimeException exception){
         HttpStatus status = HttpStatus.BAD_REQUEST;
