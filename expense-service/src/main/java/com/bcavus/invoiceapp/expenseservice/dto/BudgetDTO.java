@@ -15,15 +15,15 @@ import lombok.experimental.Accessors;
 @ToString
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ExpenseDTO extends ServiceDTO{
+public class BudgetDTO extends ServiceDTO{
 
-    @JsonProperty(value = "id", required = true)
-    private String id;
+    @JsonProperty(value = "limit", required = true)
+    private Integer limit;
 
-    @JsonProperty(value = "userId", required = true)
-    private String userId;
+    @JsonProperty(value = "spend", required = true)
+    private Integer spend;
 
-    @JsonProperty(value = "budget", required = true)
-    private BudgetDTO budget;
+    @JsonProperty(value = "remaining", required = true)
+    private Integer remaining;
 
 }
