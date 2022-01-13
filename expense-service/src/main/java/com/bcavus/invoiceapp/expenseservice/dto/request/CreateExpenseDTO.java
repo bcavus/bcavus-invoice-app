@@ -1,5 +1,6 @@
-package com.bcavus.invoiceapp.expenseservice.dto;
+package com.bcavus.invoiceapp.expenseservice.dto.request;
 
+import com.bcavus.invoiceapp.expenseservice.dto.ServiceDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,15 +16,7 @@ import lombok.experimental.Accessors;
 @ToString
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ExpenseDTO extends ServiceDTO{
-
-    @JsonProperty(value = "id", required = true)
-    private String id;
-
+public class CreateExpenseDTO {
     @JsonProperty(value = "userId", required = true)
     private String userId;
-
-    @JsonProperty(value = "budget", required = true)
-    private BudgetDTO budget;
-
 }
