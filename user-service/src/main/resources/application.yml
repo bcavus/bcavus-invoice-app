@@ -10,9 +10,9 @@ spring:
   profiles: dev
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI}
-      database: ${SPRING_DATA_MONGODB_DATABASE}
-      authentication-database: ${SPRING_DATA_MONGODB_AUTHENTICATIONDATABASE}
+      uri: ${USER_SPRING_DATA_MONGODB_URI}
+      database: ${USER_SPRING_DATA_MONGODB_DATABASE}
+      authentication-database: ${USER_SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE}
 
 server:
   port: 8081
