@@ -7,6 +7,5 @@ mongo -- "$MONGO_INITDB_DATABASE" <<EOF
 
     var service_user = '$USER_SERVICE_MONGO_DATABASE_USER';
     var service_pass = '$USER_SERVICE_MONGO_DATABASE_PASSWORD';
-    var service_db = db.getSiblingDB('$USER_SERVICE_MONGO_DATABASE_NAME');
-    service_db.createUser({user: service_user, pwd: service_pass, roles: ["readWrite"]});
+    db.createUser({user: service_user, pwd: service_pass, roles: [{ role: "readWrite", db: '$USER_SERVICE_MONGO_DATABASE_NAME' }]});
 EOF
