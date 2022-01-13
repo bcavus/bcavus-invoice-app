@@ -15,7 +15,7 @@ services:
     env_file:
       - .env.dev
     restart:
-      always
+      on-failure
     environment:
       MONGO_INITDB_DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
       MONGO_INITDB_ROOT_USERNAME: ${DEFAULT_MONGO_INITDB_ROOT_USERNAME}
@@ -46,9 +46,59 @@ services:
       SPRING_DATA_MONGODB_DATABASE: ${USER_SERVICE_MONGO_DATABASE_NAME}
       SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
 
+  expense-mongo-db:
+    container_name: expense-mongo-db
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./data/docker-entrypoint-initdb.d/mongo-expense-init.sh:/docker-entrypoint-initdb.d/mongo-expense-init.sh
+      - expense-mongo-db:/data/db
+      - expense-mongo-config:/data/configdb
+    networks:
+      - expense-network
+    env_file:
+      - .env.dev
+    restart:
+      on-failure
+    environment:
+      MONGO_INITDB_DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
+      MONGO_INITDB_ROOT_USERNAME: ${DEFAULT_MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DEFAULT_MONGO_INITDB_ROOT_PASSWORD}
+      EXPENSE_SERVICE_MONGO_DATABASE_NAME: ${EXPENSE_SERVICE_MONGO_DATABASE_NAME}
+      EXPENSE_SERVICE_MONGO_DATABASE_USER: ${EXPENSE_SERVICE_MONGO_DATABASE_USER}
+      EXPENSE_SERVICE_MONGO_DATABASE_PASSWORD: ${EXPENSE_SERVICE_MONGO_DATABASE_PASSWORD}
+
+  expense-service:
+    container_name: expense-service
+    build:
+      context: ./expense-service
+      args:
+        ENV_PROFILE: ${EXPENSE_SERVICE_ENV_PROFILE}
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    networks:
+      - expense-network
+    restart:
+      on-failure
+    depends_on:
+      - expense-mongo-db
+    env_file:
+      - .env.dev
+    environment:
+      EXPENSE_LIMIT: ${EXPENSE_SERVICE_LIMIT}
+      SPRING_DATA_MONGODB_URI: mongodb://${EXPENSE_SERVICE_MONGO_DATABASE_USER}:${EXPENSE_SERVICE_MONGO_DATABASE_PASSWORD}@expense-mongo-db
+      SPRING_DATA_MONGODB_DATABASE: ${EXPENSE_SERVICE_MONGO_DATABASE_NAME}
+      SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
+
+
 volumes:
   user-mongo-db:
   user-mongo-config:
+  expense-mongo-db:
+  expense-mongo-config:
 
 networks:
   user-network:
+  expense-network:
