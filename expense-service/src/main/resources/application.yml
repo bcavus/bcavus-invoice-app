@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    active: "dev"
+  jackson:
+    serialization:
+      indent_output: true
+
+---
+spring:
+  profiles: dev
+  data:
+    mongodb:
+      uri: ${EXPENSE_SPRING_DATA_MONGODB_URI}
+      database: ${EXPENSE_SPRING_DATA_MONGODB_DATABASE}
+      authentication-database: ${EXPENSE_SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE}
+
+expense:
+  limit: ${EXPENSE_LIMIT}
+
+server:
+  port: 8082
