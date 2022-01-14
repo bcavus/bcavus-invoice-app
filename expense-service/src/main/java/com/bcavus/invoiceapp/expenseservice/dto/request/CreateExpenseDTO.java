@@ -1,6 +1,5 @@
 package com.bcavus.invoiceapp.expenseservice.dto.request;
 
-import com.bcavus.invoiceapp.expenseservice.dto.ServiceDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
