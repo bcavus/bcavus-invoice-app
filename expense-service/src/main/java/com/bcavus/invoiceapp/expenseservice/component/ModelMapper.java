@@ -21,6 +21,7 @@ public class ModelMapper {
     public ExpenseDTO mapToExpenseDTO(Expense expenseEntity) {
         return ExpenseDTO.builder()
                 .id(expenseEntity.getId())
+                .userId(expenseEntity.getUserId())
                 .budget(this.mapToBudgetDTO(expenseEntity.getBudget()))
                 .build();
     }
