@@ -21,4 +21,22 @@ public class Invoice {
 
     @Field
     private String status;
+
+    @Field
+    private String firstName;
+
+    @Field
+    private String lastName;
+
+    @Field
+    private String email;
+
+    @Field
+    private Integer amount;
+
+    @Field
+    private String product;
+
+    @Field
+    private String billNumber;
 }
