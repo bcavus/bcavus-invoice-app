@@ -3,10 +3,12 @@ package com.bcavus.invoiceapp.expenseservice.service;
 import com.bcavus.invoiceapp.expenseservice.component.ModelConverter;
 import com.bcavus.invoiceapp.expenseservice.component.ModelMapper;
 import com.bcavus.invoiceapp.expenseservice.config.ExpenseServiceConfiguration;
+import com.bcavus.invoiceapp.expenseservice.domain.ExpenseDomain;
 import com.bcavus.invoiceapp.expenseservice.dto.BudgetDTO;
 import com.bcavus.invoiceapp.expenseservice.dto.ExpenseDTO;
 import com.bcavus.invoiceapp.expenseservice.exception.ExpenseAlreadyExistsException;
-import com.bcavus.invoiceapp.expenseservice.exception.NoExpenseFound;
+import com.bcavus.invoiceapp.expenseservice.exception.NoExpenseFoundException;
+import com.bcavus.invoiceapp.expenseservice.exception.NotEnoughExpenseBudgetException;
 import com.bcavus.invoiceapp.expenseservice.model.Expense;
 import com.bcavus.invoiceapp.expenseservice.repository.ExpenseRepository;
 import org.slf4j.Logger;
@@ -24,6 +26,9 @@ public class ExpenseServiceImpl implements ExpenseService{
     private final ExpenseRepository expenseRepository;
 
     @Autowired
+    private final ExpenseDomain expenseDomain;
+
+    @Autowired
     private final ExpenseServiceConfiguration expenseServiceConfiguration;
 
     @Autowired
@@ -33,10 +38,12 @@ public class ExpenseServiceImpl implements ExpenseService{
     private final ModelConverter modelConverter;
 
     public ExpenseServiceImpl(ExpenseRepository expenseRepository,
+                              ExpenseDomain expenseDomain,
                               ExpenseServiceConfiguration expenseServiceConfiguration,
                               ModelMapper modelMapper,
                               ModelConverter modelConverter) {
         this.expenseRepository = expenseRepository;
+        this.expenseDomain = expenseDomain;
         this.expenseServiceConfiguration = expenseServiceConfiguration;
         this.modelMapper = modelMapper;
         this.modelConverter = modelConverter;
@@ -88,7 +95,7 @@ public class ExpenseServiceImpl implements ExpenseService{
         if(foundExpense.isEmpty()) {
             logger.warn("[ExpenseService/getExpenseById]: Cannot find any expense with given id: " + expenseId);
 
-            throw new NoExpenseFound("Cannot find any expense with given expenseId: " + expenseId);
+            throw new NoExpenseFoundException("Cannot find any expense with given expenseId: " + expenseId);
         }
 
         logger.info("[ExpenseService/getExpenseById]: Successfully retrieved expense: " + foundExpense.get());
@@ -110,11 +117,30 @@ public class ExpenseServiceImpl implements ExpenseService{
         if(foundExpense.isEmpty()) {
             logger.warn("[ExpenseService/getExpenseByUserId]: Cannot find any expense with given userId: " + userId);
 
-            throw new NoExpenseFound("Cannot find any expense with given userId: " + userId);
+            throw new NoExpenseFoundException("Cannot find any expense with given userId: " + userId);
         }
 
         logger.info("[ExpenseService/getExpenseByUserId]: Successfully retrieved expense: " + foundExpense.get());
 
         return this.modelMapper.mapToExpenseDTO(foundExpense.get());
+    }
+
+    @Override
+    public ExpenseDTO spendAmountFromExpenseBudgetByUserId(String userId, Integer amountToBeSpend) {
+        ExpenseDTO foundExpense = this.getExpenseByUserId(userId);
+
+        if(!this.expenseDomain.hasEnoughBudget(foundExpense,amountToBeSpend)) {
+            logger.info("[ExpenseService/spendAmountFromExpenseBudgetByUserId]: Budget is not enough to be spend with given amount: " + amountToBeSpend);
+
+            throw new NotEnoughExpenseBudgetException("Budget is not enough to be spend with given amount: " + amountToBeSpend);
+        }
+
+        ExpenseDTO spendExpense = this.expenseDomain.spendAmount(foundExpense, amountToBeSpend);
+
+        Expense updatedExpense = this.expenseRepository.save(this.modelConverter.convertToExpense(spendExpense));
+
+        logger.info("[ExpenseService/spendAmountFromExpenseBudgetByUserId]: Successfully spent amount from expense: " + updatedExpense);
+
+        return this.modelMapper.mapToExpenseDTO(updatedExpense);
     }
 }

@@ -6,4 +6,6 @@ public interface ExpenseService {
     ExpenseDTO createExpense(String userId);
     ExpenseDTO getExpenseById(String expenseId);
     ExpenseDTO getExpenseByUserId(String userId);
+
+    ExpenseDTO spendAmountFromExpenseBudgetByUserId(String userId, Integer amountToBeSpend);
 }
