@@ -92,13 +92,39 @@ services:
       SPRING_DATA_MONGODB_DATABASE: ${EXPENSE_SERVICE_MONGO_DATABASE_NAME}
       SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
 
+  invoice-mongo-db:
+    container_name: invoice-mongo-db
+    image: mongo:latest
+    ports:
+      - "27019:27017"
+    volumes:
+      - ./data/docker-entrypoint-initdb.d/mongo-invoice-init.sh:/docker-entrypoint-initdb.d/mongo-invoice-init.sh
+      - invoice-mongo-db:/data/db
+      - invoice-mongo-config:/data/configdb
+    networks:
+      - invoice-network
+    env_file:
+      - .env.dev
+    restart:
+      on-failure
+    environment:
+      MONGO_INITDB_DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
+      MONGO_INITDB_ROOT_USERNAME: ${DEFAULT_MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DEFAULT_MONGO_INITDB_ROOT_PASSWORD}
+      INVOICE_SERVICE_MONGO_DATABASE_NAME: ${INVOICE_SERVICE_MONGO_DATABASE_NAME}
+      INVOICE_SERVICE_MONGO_DATABASE_USER: ${INVOICE_SERVICE_MONGO_DATABASE_USER}
+      INVOICE_SERVICE_MONGO_DATABASE_PASSWORD: ${INVOICE_SERVICE_MONGO_DATABASE_PASSWORD}
+
 
 volumes:
   user-mongo-db:
   user-mongo-config:
   expense-mongo-db:
   expense-mongo-config:
+  invoice-mongo-db:
+  invoice-mongo-config:
 
 networks:
   user-network:
   expense-network:
+  invoice-network:
