@@ -17,7 +17,8 @@ public class ExceptionHelper {
 
     @ExceptionHandler({
             IllegalArgumentException.class,
-            ExpenseAlreadyExistsException.class
+            ExpenseAlreadyExistsException.class,
+            NoExpenseFound.class
     })
     public ResponseEntity<APIResponse> handleRuntimeServiceExceptions(RuntimeException exception){
         HttpStatus status = HttpStatus.BAD_REQUEST;

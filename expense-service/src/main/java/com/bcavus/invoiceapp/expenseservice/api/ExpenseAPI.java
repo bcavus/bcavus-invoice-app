@@ -1,12 +1,11 @@
 package com.bcavus.invoiceapp.expenseservice.api;
 
-import com.bcavus.invoiceapp.expenseservice.config.ExpenseServiceConfiguration;
 import com.bcavus.invoiceapp.expenseservice.dto.ExpenseDTO;
-import com.bcavus.invoiceapp.expenseservice.dto.ServiceDTO;
 import com.bcavus.invoiceapp.expenseservice.dto.request.APIResponse;
 import com.bcavus.invoiceapp.expenseservice.dto.request.CreateExpenseDTO;
 import com.bcavus.invoiceapp.expenseservice.dto.request.ServiceResponse;
 import com.bcavus.invoiceapp.expenseservice.service.ExpenseService;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +25,22 @@ public class ExpenseAPI {
         this.expenseService = expenseService;
     }
 
-    @GetMapping(path = {"/"})
-    public ResponseEntity<APIResponse> get() {
-        return ResponseEntity.ok(APIResponse.builder()
-                .code(200)
-                .status("OK")
-                .success(true)
-                .data(ExpenseDTO.builder()
-                        .id("1")
-                        .userId("1")
-                        .build())
-                .build()
-        );
+    @GetMapping(path = {"/{id}"})
+    public ResponseEntity<APIResponse> getById(@PathVariable(value = "id") @NonNull final String expenseId) {
+        final ExpenseDTO foundExpenseDTO = this.expenseService.getExpenseById(expenseId);
+
+        logger.info("[ExpenseAPI/getById]: " + expenseId);
+
+        return new ServiceResponse<ExpenseDTO>().response(foundExpenseDTO);
+    }
+
+    @GetMapping(path = { "/" })
+    public ResponseEntity<APIResponse> getByUserId(@RequestParam(value = "user") @NonNull final String userId) {
+        final ExpenseDTO foundExpenseDTO = this.expenseService.getExpenseByUserId(userId);
+
+        logger.info("[ExpenseAPI/getByUserId]: " + userId);
+
+        return new ServiceResponse<ExpenseDTO>().response(foundExpenseDTO);
     }
 
     @PostMapping(path = { "/" })
