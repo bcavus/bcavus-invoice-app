@@ -12,6 +12,15 @@ import org.springframework.stereotype.Component;
 public class ModelConverter {
 
     public Expense convertToExpense(ExpenseDTO expenseDTO) {
+        boolean hasId = expenseDTO.getId() != null;
+
+        if(hasId) {
+            return new Expense()
+                    .setId(expenseDTO.getId())
+                    .setUserId(expenseDTO.getUserId())
+                    .setBudget(this.convertToBudget(expenseDTO.getBudget()));
+        }
+
         return new Expense()
                 .setUserId(expenseDTO.getUserId())
                 .setBudget(this.convertToBudget(expenseDTO.getBudget()));

@@ -4,6 +4,7 @@ import com.bcavus.invoiceapp.expenseservice.dto.ExpenseDTO;
 import com.bcavus.invoiceapp.expenseservice.dto.request.APIResponse;
 import com.bcavus.invoiceapp.expenseservice.dto.request.CreateExpenseDTO;
 import com.bcavus.invoiceapp.expenseservice.dto.request.ServiceResponse;
+import com.bcavus.invoiceapp.expenseservice.dto.request.SpendExpenseDTO;
 import com.bcavus.invoiceapp.expenseservice.service.ExpenseService;
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -50,5 +51,14 @@ public class ExpenseAPI {
         logger.info("[ExpenseAPI/create]: " + createdExpenseDTO);
 
         return new ServiceResponse<ExpenseDTO>().response(createdExpenseDTO);
+    }
+
+    @PutMapping(path = { "/update" })
+    public ResponseEntity<APIResponse> update(@RequestBody final SpendExpenseDTO spendExpenseDTO) {
+        final ExpenseDTO updatedExpenseDTO = this.expenseService.spendAmountFromExpenseBudgetByUserId(spendExpenseDTO.getUserId(),spendExpenseDTO.getAmount());
+
+        logger.info("[ExpenseAPI/update]: " + updatedExpenseDTO);
+
+        return new ServiceResponse<ExpenseDTO>().response(updatedExpenseDTO);
     }
 }
