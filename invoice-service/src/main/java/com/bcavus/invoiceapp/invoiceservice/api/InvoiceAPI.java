@@ -7,6 +7,7 @@ import com.bcavus.invoiceapp.invoiceservice.dto.request.APIResponse;
 import com.bcavus.invoiceapp.invoiceservice.dto.request.CreateInvoiceDTO;
 import com.bcavus.invoiceapp.invoiceservice.dto.request.ServiceResponse;
 import com.bcavus.invoiceapp.invoiceservice.service.InvoiceService;
+import com.bcavus.invoiceapp.invoiceservice.service.messaging.InvoiceMessageService;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

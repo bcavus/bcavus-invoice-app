@@ -13,6 +13,22 @@ spring:
       uri: ${INVOICE_SPRING_DATA_MONGODB_URI}
       database: ${INVOICE_SPRING_DATA_MONGODB_DATABASE}
       authentication-database: ${INVOICE_SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE}
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+invoice:
+  rabbitmq:
+    user:
+      validation-queue: user-validation-queue
+      exchange: user-validation-exchange
+      routingkey: user
+    expense:
+      validation-queue: expense-validation-queue
+      exchange: expense-validation-exchange
+      routingkey: expense
 
 server:
   port: 8083

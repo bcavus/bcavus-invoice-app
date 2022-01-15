@@ -20,7 +20,7 @@ public class Invoice {
     private String id;
 
     @Field
-    private String status;
+    private InvoiceStatus status;
 
     @Field
     private String firstName;
