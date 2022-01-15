@@ -115,6 +115,28 @@ services:
       INVOICE_SERVICE_MONGO_DATABASE_USER: ${INVOICE_SERVICE_MONGO_DATABASE_USER}
       INVOICE_SERVICE_MONGO_DATABASE_PASSWORD: ${INVOICE_SERVICE_MONGO_DATABASE_PASSWORD}
 
+  invoice-service:
+    container_name: invoice-service
+    build:
+      context: ./invoice-service
+      args:
+        ENV_PROFILE: ${INVOICE_SERVICE_ENV_PROFILE}
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    networks:
+      - invoice-network
+    restart:
+      on-failure
+    depends_on:
+      - invoice-mongo-db
+    env_file:
+      - .env.dev
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://${INVOICE_SERVICE_MONGO_DATABASE_USER}:${INVOICE_SERVICE_MONGO_DATABASE_PASSWORD}@invoice-mongo-db
+      SPRING_DATA_MONGODB_DATABASE: ${INVOICE_SERVICE_MONGO_DATABASE_NAME}
+      SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
+
 
 volumes:
   user-mongo-db:
