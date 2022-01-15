@@ -6,11 +6,13 @@ import com.bcavus.invoiceapp.userservice.domain.UserDomain;
 import com.bcavus.invoiceapp.userservice.dto.PaginatedUsersDTO;
 import com.bcavus.invoiceapp.userservice.dto.PaginationMetadata;
 import com.bcavus.invoiceapp.userservice.dto.UserDTO;
+import com.bcavus.invoiceapp.userservice.dto.message.UserExpenseCreationMessage;
 import com.bcavus.invoiceapp.userservice.dto.request.CreateUserDTO;
 import com.bcavus.invoiceapp.userservice.exception.NoSuchUserFound;
 import com.bcavus.invoiceapp.userservice.exception.UserAlreadyExistsException;
 import com.bcavus.invoiceapp.userservice.model.User;
 import com.bcavus.invoiceapp.userservice.repository.UserRepository;
+import com.bcavus.invoiceapp.userservice.service.messaging.UserMessageService;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,9 @@ public class UserServiceImpl implements UserService{
     private final UserDomain userDomain;
 
     @Autowired
+    private final UserMessageService userMessageService;
+
+    @Autowired
     private final ModelMapper modelMapper;
 
     @Autowired
@@ -41,10 +46,12 @@ public class UserServiceImpl implements UserService{
 
     public UserServiceImpl(UserRepository userRepository,
                            UserDomain userDomain,
+                           UserMessageService userMessageService,
                            ModelMapper modelMapper,
                            ModelConverter modelConverter) {
         this.userRepository = userRepository;
-        this.userDomain =userDomain;
+        this.userDomain = userDomain;
+        this.userMessageService = userMessageService;
         this.modelMapper = modelMapper;
         this.modelConverter = modelConverter;
     }
@@ -62,6 +69,8 @@ public class UserServiceImpl implements UserService{
                 });
 
         User createdUser = this.userRepository.insert(this.modelConverter.convertToUserModel(user.get()));
+
+        this.userMessageService.sendMessage(UserExpenseCreationMessage.builder().userid(createdUser.getId()).build());
 
         logger.info("[UserService/createUser]: Successfully created a user " + createdUser);
 

@@ -19,16 +19,16 @@ spring:
     username: guest
     password: guest
 
-invoice:
+invoice-service:
   rabbitmq:
     user:
       validation-queue: user-validation-queue
       exchange: user-validation-exchange
-      routingkey: user
+      routingkey: user-validate
     expense:
       validation-queue: expense-validation-queue
       exchange: expense-validation-exchange
-      routingkey: expense
+      routingkey: expense-validate
 
 server:
   port: 8083

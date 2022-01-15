@@ -13,6 +13,18 @@ spring:
       uri: ${USER_SPRING_DATA_MONGODB_URI}
       database: ${USER_SPRING_DATA_MONGODB_DATABASE}
       authentication-database: ${USER_SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE}
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+user-service:
+  rabbitmq:
+    user:
+      creation-queue: user-creation-queue
+      exchange: user-creation-exchange
+      routingkey: user-create
 
 server:
   port: 8081
