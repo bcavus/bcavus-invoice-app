@@ -23,4 +23,10 @@ public class InvoiceUserValidationMessage extends InvoiceMessage {
     @JsonProperty(value = "email", required = true)
     private String userEmail;
 
+    @JsonProperty(value = "amount", required = true)
+    private Integer expenseAmount;
+
+    @JsonProperty(value = "valid", required = true)
+    private boolean valid;
+
 }

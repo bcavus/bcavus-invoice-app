@@ -25,6 +25,10 @@ user-service:
       creation-queue: user-creation-queue
       exchange: user-creation-exchange
       routingkey: user-create
+    expense:
+      validation-queue: expense-validation-queue
+      exchange: expense-validation-exchange
+      routingkey: expense-validate
 
 server:
   port: 8081

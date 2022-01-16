@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -67,14 +68,9 @@ public class InvoiceServiceImpl implements InvoiceService{
         this.invoiceMessageService.sendMessage(InvoiceUserValidationMessage.builder()
                 .invoiceId(createdInvoice.getId())
                 .userEmail(createdInvoice.getEmail())
+                .expenseAmount(createdInvoice.getAmount())
+                .valid(false)
                 .build());
-
-        /*
-        this.invoiceMessageService.sendMessage(InvoiceExpenseValidationMessage.builder()
-                .invoiceId(createdInvoice.getId())
-                .available(true)
-                .build());
-         */
 
         return this.getInvoiceById(createdInvoice.getId());
     }

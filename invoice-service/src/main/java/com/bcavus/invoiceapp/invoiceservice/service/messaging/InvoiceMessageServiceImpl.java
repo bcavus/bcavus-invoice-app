@@ -63,17 +63,9 @@ public class InvoiceMessageServiceImpl implements InvoiceMessageService {
                     rabbitMQConfig.getUserValidationKey(),
                     message);
         }
-        else if(message instanceof InvoiceExpenseValidationMessage){
 
-            return this.sendMessage(
-                    rabbitMQConfig.getExpenseValidationQueueName(),
-                    rabbitMQConfig.getExpenseValidationExchange(),
-                    rabbitMQConfig.getExpenseValidationKey(),
-                    message);
-        }
-        else {
-            throw new IllegalArgumentException("Message is not suitable for sending.");
-        }
+        throw new IllegalArgumentException("Message is not suitable for sending.");
+
     }
 
     private boolean sendMessage(String queue, String exchange, String routingKey, InvoiceMessage message) {
@@ -97,46 +89,22 @@ public class InvoiceMessageServiceImpl implements InvoiceMessageService {
         return isSuccess;
     }
 
-    @RabbitListener(queues = "user-validation-queue")
-    private void receiveMessage(InvoiceUserValidationMessage message) {
+    @RabbitListener(queues = "invoice-validation-queue")
+    private void receiveMessage (InvoiceExpenseValidationMessage message) {
 
-        String invoiceId = message.getInvoiceId();
+        if(message.getInvoiceId() != null) {
 
-        Optional<Invoice> invoice = this.invoiceRepository.findById(invoiceId);
+            Optional<Invoice> invoice = this.invoiceRepository.findById(message.getInvoiceId());
 
-        if(invoice.isPresent() && invoice.get().getStatus() == InvoiceStatus.CREATED) {
-            InvoiceDTO invoiceDTO = this.modelMapper.mapToInvoiceDTO(invoice.get());
+            if(invoice.isPresent()){
+                InvoiceDTO invoiceDTO = this.modelMapper.mapToInvoiceDTO(invoice.get());
 
-            invoiceDTO.setStatus(InvoiceStatus.VALIDATING.name());
+                invoiceDTO.setStatus((message.isAvailable()) ? InvoiceStatus.ACCEPTED.name() : InvoiceStatus.REJECTED.name());
 
-            this.invoiceRepository.save(this.modelConverter.convertToInvoice(invoiceDTO));
-
-            logger.info("Updated invoice with given id : " + invoiceDTO.getId());
+                this.invoiceRepository.save(this.modelConverter.convertToInvoice(invoiceDTO));
+            }
         }
 
-        logger.info("Received message: " + message);
+        logger.info("Updated invoice: " + message);
     }
-
-    @RabbitListener(queues = "expense-validation-queue")
-    private void receiveMessage(InvoiceExpenseValidationMessage message) {
-        logger.info("Received message: " + message);
-
-        String invoiceId = message.getInvoiceId();
-
-        Optional<Invoice> invoice = this.invoiceRepository.findById(invoiceId);
-
-        if(invoice.isPresent() && invoice.get().getStatus() == InvoiceStatus.VALIDATING) {
-            InvoiceDTO invoiceDTO = this.modelMapper.mapToInvoiceDTO(invoice.get());
-
-            invoiceDTO.setStatus(message.isAvailable() ? InvoiceStatus.ACCEPTED.name() : InvoiceStatus.REJECTED.name());
-
-            this.invoiceRepository.save(this.modelConverter.convertToInvoice(invoiceDTO));
-
-            logger.info("Updated invoice with given id : " + invoiceDTO.getId());
-        }
-
-        logger.info("----" + invoice);
-        logger.info("Received message: " + message);
-    }
-
 }

@@ -11,6 +11,7 @@ import com.bcavus.invoiceapp.expenseservice.exception.NoExpenseFoundException;
 import com.bcavus.invoiceapp.expenseservice.exception.NotEnoughExpenseBudgetException;
 import com.bcavus.invoiceapp.expenseservice.model.Expense;
 import com.bcavus.invoiceapp.expenseservice.repository.ExpenseRepository;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,7 +127,7 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public ExpenseDTO spendAmountFromExpenseBudgetByUserId(String userId, Integer amountToBeSpend) {
+    public ExpenseDTO spendAmountFromExpenseBudgetByUserId(@NonNull String userId, @NonNull Integer amountToBeSpend) {
         ExpenseDTO foundExpense = this.getExpenseByUserId(userId);
 
         if(!this.expenseDomain.hasEnoughBudget(foundExpense,amountToBeSpend)) {

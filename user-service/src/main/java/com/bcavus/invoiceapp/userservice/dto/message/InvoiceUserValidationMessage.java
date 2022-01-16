@@ -15,7 +15,18 @@ import lombok.experimental.Accessors;
 @ToString
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserExpenseCreationMessage extends RabbitMessage {
-    @JsonProperty(value = "userid", required = true)
-    private String userid;
+public class InvoiceUserValidationMessage extends RabbitMessage {
+
+    @JsonProperty(value = "invoiceid", required = true)
+    private String invoiceId;
+
+    @JsonProperty(value = "email", required = true)
+    private String userEmail;
+
+    @JsonProperty(value = "amount", required = true)
+    private Integer expenseAmount;
+
+    @JsonProperty(value = "valid", required = true)
+    private boolean valid;
+
 }

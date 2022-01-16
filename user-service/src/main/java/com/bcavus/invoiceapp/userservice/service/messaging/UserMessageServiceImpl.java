@@ -1,10 +1,11 @@
 package com.bcavus.invoiceapp.userservice.service.messaging;
 
-import com.bcavus.invoiceapp.userservice.component.ModelConverter;
-import com.bcavus.invoiceapp.userservice.component.ModelMapper;
 import com.bcavus.invoiceapp.userservice.config.RabbitMQConfig;
+import com.bcavus.invoiceapp.userservice.dto.message.InvoiceUserValidationMessage;
 import com.bcavus.invoiceapp.userservice.dto.message.UserExpenseCreationMessage;
-import com.bcavus.invoiceapp.userservice.dto.message.UserMessage;
+import com.bcavus.invoiceapp.userservice.dto.message.RabbitMessage;
+import com.bcavus.invoiceapp.userservice.dto.message.UserExpenseValidationMessage;
+import com.bcavus.invoiceapp.userservice.model.User;
 import com.bcavus.invoiceapp.userservice.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,26 +31,17 @@ public class UserMessageServiceImpl implements UserMessageService {
     @Autowired
     private final UserRepository userRepository;
 
-    @Autowired
-    private final ModelMapper modelMapper;
-
-    @Autowired
-    private final ModelConverter modelConverter;
-
     public UserMessageServiceImpl(RabbitTemplate rabbitTemplate,
                                   RabbitMQConfig rabbitMQConfig,
-                                  UserRepository userRepository,
-                                  ModelMapper modelMapper,
-                                  ModelConverter modelConverter) {
+                                  UserRepository userRepository) {
         this.rabbitTemplate = rabbitTemplate;
         this.rabbitMQConfig = rabbitMQConfig;
         this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-        this.modelConverter = modelConverter;
     }
 
     @Override
-    public boolean sendMessage(UserMessage message) {
+    public boolean sendMessage(RabbitMessage message) {
+
         if(message instanceof UserExpenseCreationMessage){
 
             return this.sendMessage(
@@ -58,18 +50,22 @@ public class UserMessageServiceImpl implements UserMessageService {
                     rabbitMQConfig.getUserCreationKey(),
                     message);
         }
-        else {
-            throw new IllegalArgumentException("Message is not suitable for sending.");
+
+
+        if(message instanceof UserExpenseValidationMessage) {
+
+            return this.sendMessage(
+                    rabbitMQConfig.getExpenseValidationQueueName(),
+                    rabbitMQConfig.getExpenseValidationExchange(),
+                    rabbitMQConfig.getExpenseValidationKey(),
+                    message);
         }
+
+        throw new IllegalArgumentException("Message is not suitable for sending.");
+
     }
 
-    @RabbitListener(queues = "user-creation-queue")
-    private void receiveMessage(UserExpenseCreationMessage message) {
-
-        logger.info("Received message: " + message);
-    }
-
-    private boolean sendMessage(String queue, String exchange, String routingKey, UserMessage message) {
+    private boolean sendMessage(String queue, String exchange, String routingKey, RabbitMessage message) {
 
         boolean isSuccess = false;
 
@@ -88,5 +84,31 @@ public class UserMessageServiceImpl implements UserMessageService {
         }
 
         return isSuccess;
+    }
+
+    @RabbitListener(queues = "user-validation-queue")
+    private void receiveMessage(InvoiceUserValidationMessage message) {
+
+        String userEmail = message.getUserEmail();
+
+        boolean isValid = false;
+
+        Optional<User> foundUser = this.userRepository.findByEmail(userEmail);
+
+        logger.info("***" + foundUser);
+
+        if(foundUser.isPresent()) {
+            logger.info("***" + foundUser.get().getId());
+
+            this.sendMessage(UserExpenseValidationMessage.builder()
+                    .invoiceId(message.getInvoiceId())
+                    .userId(foundUser.get().getId())
+                    .expenseAmount(message.getExpenseAmount())
+                    .build());
+
+            logger.info("User is valid.Sending message to expense-validation-queue" + message);
+        }
+
+        logger.info("Received message: " + message);
     }
 }
