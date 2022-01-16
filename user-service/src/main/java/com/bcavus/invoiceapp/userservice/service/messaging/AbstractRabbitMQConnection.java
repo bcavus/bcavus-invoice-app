@@ -1,9 +1,9 @@
-package com.bcavus.invoiceapp.invoiceservice.service.messaging;
+package com.bcavus.invoiceapp.userservice.service.messaging;
 
-import com.bcavus.invoiceapp.invoiceservice.config.RabbitMQConfig;
-import com.bcavus.invoiceapp.invoiceservice.service.messaging.message.InvoiceUserValidationMessage;
-import com.bcavus.invoiceapp.invoiceservice.service.messaging.message.RabbitMessage;
-import com.bcavus.invoiceapp.invoiceservice.service.messaging.producer.InvoiceMessageProducerServiceImpl;
+import com.bcavus.invoiceapp.userservice.config.RabbitMQConfig;
+import com.bcavus.invoiceapp.userservice.service.messaging.message.RabbitMessage;
+import com.bcavus.invoiceapp.userservice.service.messaging.message.UserExpenseCreationMessage;
+import com.bcavus.invoiceapp.userservice.service.messaging.message.UserExpenseValidationMessage;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,12 +28,22 @@ public abstract class AbstractRabbitMQConnection implements RabbitMQMessageSende
     @Override
     public boolean sendMessage(RabbitMessage message) throws IllegalArgumentException {
 
-        if(message instanceof InvoiceUserValidationMessage){
+        if(message instanceof UserExpenseCreationMessage){
 
             return this.sendMessageToQueue(
-                    rabbitMQConfig.getUserValidationQueueName(),
-                    rabbitMQConfig.getUserValidationExchange(),
-                    rabbitMQConfig.getUserValidationKey(),
+                    rabbitMQConfig.getUserCreationQueueName(),
+                    rabbitMQConfig.getUserCreationExchange(),
+                    rabbitMQConfig.getUserCreationKey(),
+                    message);
+        }
+
+
+        if(message instanceof UserExpenseValidationMessage) {
+
+            return this.sendMessageToQueue(
+                    rabbitMQConfig.getExpenseValidationQueueName(),
+                    rabbitMQConfig.getExpenseValidationExchange(),
+                    rabbitMQConfig.getExpenseValidationKey(),
                     message);
         }
 

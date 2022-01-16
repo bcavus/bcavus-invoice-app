@@ -1,4 +1,4 @@
-package com.bcavus.invoiceapp.userservice.dto.message;
+package com.bcavus.invoiceapp.userservice.service.messaging.message;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
