@@ -11,4 +11,6 @@ public interface InvoiceService {
     InvoiceDTO createInvoice(CreateInvoiceDTO createInvoiceDTO);
     InvoiceDTO getInvoiceById(@NonNull String invoiceId);
     PaginatedInvoiceDTO getAllInvoices(@NonNull PaginationMetadata metadata);
+
+    InvoiceDTO updateInvoiceStatusById(@NonNull String id, @NonNull boolean isAvailable);
 }
