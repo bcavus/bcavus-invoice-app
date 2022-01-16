@@ -9,6 +9,7 @@ import com.bcavus.invoiceapp.invoiceservice.dto.PaginationMetadata;
 import com.bcavus.invoiceapp.invoiceservice.dto.request.CreateInvoiceDTO;
 import com.bcavus.invoiceapp.invoiceservice.exception.NoInvoiceFoundException;
 import com.bcavus.invoiceapp.invoiceservice.model.Invoice;
+import com.bcavus.invoiceapp.invoiceservice.model.InvoiceStatus;
 import com.bcavus.invoiceapp.invoiceservice.repository.InvoiceRepository;
 import com.bcavus.invoiceapp.invoiceservice.service.messaging.message.InvoiceUserValidationMessage;
 import com.bcavus.invoiceapp.invoiceservice.service.messaging.producer.InvoiceMessageProducerService;
@@ -121,11 +122,11 @@ public class InvoiceServiceImpl implements InvoiceService{
     }
 
     @Override
-    public InvoiceDTO updateInvoiceStatusById(@NonNull String invoiceId, @NonNull boolean isAvailable) {
+    public InvoiceDTO updateInvoiceStatusById(@NonNull String invoiceId, @NonNull InvoiceStatus status) {
 
         InvoiceDTO foundInvoice = this.getInvoiceById(invoiceId);
 
-        InvoiceDTO updatedInvoiceDTO = this.invoiceDomain.updateInvoiceStatus(isAvailable, foundInvoice);
+        InvoiceDTO updatedInvoiceDTO = this.invoiceDomain.updateInvoiceStatus(status, foundInvoice);
 
         Invoice updatedInvoice = this.invoiceRepository.save(this.modelConverter.convertToInvoice(updatedInvoiceDTO));
 

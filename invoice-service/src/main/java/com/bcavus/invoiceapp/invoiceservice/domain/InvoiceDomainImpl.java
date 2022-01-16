@@ -15,13 +15,7 @@ public class InvoiceDomainImpl implements InvoiceDomain{
     }
 
     @Override
-    public InvoiceDTO updateInvoiceStatus(@NonNull boolean isAcceptable, InvoiceDTO invoiceDTO) {
-        InvoiceDTO invoiceToBeUpdated = invoiceDTO;
-
-        invoiceToBeUpdated = (isAcceptable)
-                ? invoiceToBeUpdated.setStatus(InvoiceStatus.ACCEPTED.name())
-                : invoiceToBeUpdated.setStatus(InvoiceStatus.REJECTED.name());
-
-        return invoiceToBeUpdated;
+    public InvoiceDTO updateInvoiceStatus(@NonNull InvoiceStatus status, final InvoiceDTO invoiceDTO) {
+        return invoiceDTO.setStatus(status.name());
     }
 }

@@ -1,5 +1,6 @@
 package com.bcavus.invoiceapp.invoiceservice.service.messaging.consumer;
 
+import com.bcavus.invoiceapp.invoiceservice.model.InvoiceStatus;
 import com.bcavus.invoiceapp.invoiceservice.service.InvoiceService;
 import com.bcavus.invoiceapp.invoiceservice.service.messaging.message.InvoiceExpenseValidationMessage;
 import org.slf4j.Logger;
@@ -25,11 +26,17 @@ public class InvoiceMessageConsumerServiceImpl implements InvoiceMessageConsumer
     public void receiveMessage(InvoiceExpenseValidationMessage message) {
 
         if(message.getInvoiceId() == null) {
-            logger.warn("Cannot update invoice, validation message has no invoice id: " + message);
+            logger.warn("[InvoiceMessageConsumerService/receiveMessage]: Cannot update invoice, validation message has no invoice id: " + message);
         }
 
-        this.invoiceService.updateInvoiceStatusById(message.getInvoiceId(), message.isAvailable());
+        try{
+            InvoiceStatus status = message.isAvailable() ? InvoiceStatus.ACCEPTED : InvoiceStatus.REJECTED;
 
-        logger.info("Updated invoice: " + message);
+            this.invoiceService.updateInvoiceStatusById(message.getInvoiceId(), status);
+
+            logger.warn("[InvoiceMessageConsumerService/receiveMessage]: Successfully updated invoice with given message: " + message);
+        }catch (Exception ex) {
+            logger.warn("[InvoiceMessageConsumerService/receiveMessage]: Failed to update invoice " + ex.getMessage());
+        }
     }
 }
