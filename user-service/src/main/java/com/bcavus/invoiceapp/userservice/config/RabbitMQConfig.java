@@ -16,23 +16,32 @@ import org.springframework.messaging.handler.annotation.support.DefaultMessageHa
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${user-service.rabbitmq.user.creation-queue}")
+    @Value("${user-service.rabbitmq.producer.user.creation-queue}")
     private String userCreationQueue;
 
-    @Value("${user-service.rabbitmq.user.exchange}")
+    @Value("${user-service.rabbitmq.producer.user.exchange}")
     private String userCreationExchange;
 
-    @Value("${user-service.rabbitmq.user.routingkey}")
+    @Value("${user-service.rabbitmq.producer.user.routingkey}")
     private String userCreationRoutingKey;
 
-    @Value("${user-service.rabbitmq.expense.validation-queue}")
+    @Value("${user-service.rabbitmq.producer.expense.validation-queue}")
     private String expenseValidationQueue;
 
-    @Value("${user-service.rabbitmq.expense.exchange}")
+    @Value("${user-service.rabbitmq.producer.expense.exchange}")
     private String expenseValidationExchange;
 
-    @Value("${user-service.rabbitmq.expense.routingkey}")
+    @Value("${user-service.rabbitmq.producer.expense.routingkey}")
     private String expenseValidationKey;
+
+    @Value("${user-service.rabbitmq.consumer.invoice.validation-queue}")
+    private String invoiceValidationQueue;
+
+    @Value("${user-service.rabbitmq.consumer.invoice.exchange}")
+    private String invoiceValidationExchange;
+
+    @Value("${user-service.rabbitmq.consumer.invoice.routingkey}")
+    private String invoiceValidationKey;
 
     @Bean
     public Queue userCreation() {
@@ -43,6 +52,9 @@ public class RabbitMQConfig {
     public Queue expenseValidation() { return new Queue(this.getExpenseValidationQueueName(), true);}
 
     @Bean
+    public Queue invoiceValidation() { return new Queue(this.getInvoiceValidationQueueName(), true); }
+
+    @Bean
     public TopicExchange getUserCreationExchangeName() {
         return new TopicExchange(this.getUserCreationExchange());
     }
@@ -50,6 +62,11 @@ public class RabbitMQConfig {
     @Bean
     public TopicExchange getExpenseValidationExchangeName() {
         return new TopicExchange(this.getExpenseValidationExchange());
+    }
+
+    @Bean
+    public TopicExchange getInvoiceValidationExchangeName() {
+        return new TopicExchange(this.getInvoiceValidationExchange());
     }
 
     @Bean
@@ -66,6 +83,15 @@ public class RabbitMQConfig {
                 .bind(this.expenseValidation())
                 .to(this.getExpenseValidationExchangeName())
                 .with(this.getExpenseValidationKey());
+    }
+
+    @Bean
+    public Binding invoiceValidationBinding(){
+        return BindingBuilder
+                .bind(this.invoiceValidation())
+                .to(this.getInvoiceValidationExchangeName())
+                .with(this.getInvoiceValidationKey());
+
     }
 
     @Bean
@@ -104,5 +130,11 @@ public class RabbitMQConfig {
     public String getExpenseValidationExchange() { return this.expenseValidationExchange; }
 
     public String getExpenseValidationKey() { return this.expenseValidationKey; }
+
+    public String getInvoiceValidationQueueName() { return this.invoiceValidationQueue; }
+
+    public String getInvoiceValidationExchange() { return this.invoiceValidationExchange; }
+
+    public String getInvoiceValidationKey() { return this.invoiceValidationKey; }
 
 }

@@ -17,14 +17,21 @@ spring:
 expense-service:
   limit: ${EXPENSE_LIMIT}
   rabbitmq:
-    user:
-      creation-queue: user-creation-queue
-      exchange: user-creation-exchange
-      routingkey: user-create
-    invoice:
-      validation-queue: invoice-validation-queue
-      exchange: invoice-validation-exchange
-      routingkey: invoice-validate
+    producer:
+      invoice:
+        validation-queue: invoice-validation-queue
+        exchange: invoice-validation-exchange
+        routingkey: invoice-validate
+    consumer:
+      user:
+        creation-queue: user-creation-queue
+        exchange: user-creation-exchange
+        routingkey: user-create
+      expense:
+        validation-queue: expense-validation-queue
+        exchange: expense-validation-exchange
+        routingkey: expense-validate
+
 
 server:
   port: 8082

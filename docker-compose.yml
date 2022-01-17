@@ -13,7 +13,7 @@ services:
     restart:
       on-failure
     networks:
-      - invoice-network
+      - rabbit-network
 
 
   user-mongo-db:
@@ -50,16 +50,19 @@ services:
       - "8081:8081"
     networks:
       - user-network
+      - rabbit-network
     restart:
       on-failure
     depends_on:
       - user-mongo-db
+      - app-rabbitmq
     env_file:
       - .env.dev
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://${USER_SERVICE_MONGO_DATABASE_USER}:${USER_SERVICE_MONGO_DATABASE_PASSWORD}@user-mongo-db
       SPRING_DATA_MONGODB_DATABASE: ${USER_SERVICE_MONGO_DATABASE_NAME}
       SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
+      SPRING_RABBITMQ_HOST: app-rabbitmq
 
   expense-mongo-db:
     container_name: expense-mongo-db
@@ -95,10 +98,12 @@ services:
       - "8082:8082"
     networks:
       - expense-network
+      - rabbit-network
     restart:
       on-failure
     depends_on:
       - expense-mongo-db
+      - app-rabbitmq
     env_file:
       - .env.dev
     environment:
@@ -106,6 +111,7 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://${EXPENSE_SERVICE_MONGO_DATABASE_USER}:${EXPENSE_SERVICE_MONGO_DATABASE_PASSWORD}@expense-mongo-db
       SPRING_DATA_MONGODB_DATABASE: ${EXPENSE_SERVICE_MONGO_DATABASE_NAME}
       SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
+      SPRING_RABBITMQ_HOST: app-rabbitmq
 
   invoice-mongo-db:
     container_name: invoice-mongo-db
@@ -141,16 +147,19 @@ services:
       - "8083:8083"
     networks:
       - invoice-network
+      - rabbit-network
     restart:
       on-failure
     depends_on:
       - invoice-mongo-db
+      - app-rabbitmq
     env_file:
       - .env.dev
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://${INVOICE_SERVICE_MONGO_DATABASE_USER}:${INVOICE_SERVICE_MONGO_DATABASE_PASSWORD}@invoice-mongo-db
       SPRING_DATA_MONGODB_DATABASE: ${INVOICE_SERVICE_MONGO_DATABASE_NAME}
       SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}
+      SPRING_RABBITMQ_HOST: app-rabbitmq
 
 
 volumes:
@@ -165,3 +174,4 @@ networks:
   user-network:
   expense-network:
   invoice-network:
+  rabbit-network:
