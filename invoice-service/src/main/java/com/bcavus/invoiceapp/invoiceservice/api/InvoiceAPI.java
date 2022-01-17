@@ -6,6 +6,7 @@ import com.bcavus.invoiceapp.invoiceservice.dto.PaginationMetadata;
 import com.bcavus.invoiceapp.invoiceservice.dto.request.APIResponse;
 import com.bcavus.invoiceapp.invoiceservice.dto.request.CreateInvoiceDTO;
 import com.bcavus.invoiceapp.invoiceservice.dto.request.ServiceResponse;
+import com.bcavus.invoiceapp.invoiceservice.model.InvoiceStatus;
 import com.bcavus.invoiceapp.invoiceservice.service.InvoiceService;
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -54,11 +55,17 @@ public class InvoiceAPI {
                                             @Min(value = 0, message = "Page must be greater or equal to 0")
                                             @NonNull final Integer page,
 
-                                            @RequestParam(value = "size", defaultValue = "1")
+                                            @RequestParam(value = "size", defaultValue = "25")
                                             @Min(value = 1, message = "Size must be greater or equal to 1")
-                                            @NonNull final Integer size) {
+                                            @NonNull final Integer size,
 
-        final PaginationMetadata metadata = PaginationMetadata.builder().page(page).size(size).build();
+                                            @RequestParam(value = "status", required = false) final InvoiceStatus status) {
+
+        final PaginationMetadata metadata = PaginationMetadata.builder()
+                .page(page)
+                .size(size)
+                .filter(status)
+                .build();
 
         final PaginatedInvoiceDTO paginatedInvoicesDTO = this.invoiceService.getAllInvoices(metadata);
 

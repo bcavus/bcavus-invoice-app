@@ -106,7 +106,9 @@ public class InvoiceServiceImpl implements InvoiceService{
 
         final Pageable pageable = PageRequest.of(metadata.getPage(), metadata.getSize());
 
-        final Page<Invoice> pagedInvoices = this.invoiceRepository.findAll(pageable);
+        final Page<Invoice> pagedInvoices = (metadata.getFilter() == null)
+                ? this.invoiceRepository.findAll(pageable)
+                : this.invoiceRepository.findAllByStatus(metadata.getFilter().name(), pageable);
 
         logger.info("[InvoiceService/getAllInvoices]: Successfully retrieved list of invoices with given metadata");
 
