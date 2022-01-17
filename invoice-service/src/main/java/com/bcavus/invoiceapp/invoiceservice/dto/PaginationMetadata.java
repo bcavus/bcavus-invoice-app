@@ -1,5 +1,6 @@
 package com.bcavus.invoiceapp.invoiceservice.dto;
 
+import com.bcavus.invoiceapp.invoiceservice.model.InvoiceStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,4 +28,7 @@ public class PaginationMetadata extends ServiceDTO{
 
     @JsonProperty(value = "total", required = true)
     private Long total;
+
+    @JsonProperty(value = "filter", required = false)
+    private InvoiceStatus filter;
 }

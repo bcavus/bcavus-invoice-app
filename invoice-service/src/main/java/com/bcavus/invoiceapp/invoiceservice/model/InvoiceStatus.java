@@ -4,10 +4,7 @@ import java.util.Arrays;
 
 public enum InvoiceStatus {
 
-    ACCEPTED("Accepted"),
-    REJECTED("Rejected"),
-    CREATED("Created"),
-    VALIDATING("Validating");
+    ACCEPTED("Accepted"), REJECTED("Rejected"), CREATED("Created");
 
     private final String value;
 
