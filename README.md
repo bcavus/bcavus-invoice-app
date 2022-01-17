@@ -7,7 +7,7 @@ This github repository holds 3 Java Spring Applications (microservices) and buil
 Build configurations:
 
    - Build Pre-Requisite
-     * Docker-engine should be up and running at target host/machine (Install & run - Docker or Docker Desktop -)
+     * Docker-engine should be up and running at target host/machine (Install & run - Docker or Docker Desktop - )
      * Create environment file for compose build under this directory (File Name: `.env.dev`, Directory: `../bcavus-invoice-app/`)
           Example Environment file for this build: (https://gist.github.com/bcavus/87d0ea9638b39a1d73101f6866af3edc#file-dev-env)
 
@@ -20,7 +20,8 @@ Build configurations:
 	    -   user-service, user-mongo-db
             -   expense-service, expense-mongo-db
             -   invoice-service, invoice-mongo-db
-	(Application Containers Example Image: https://pasteboard.co/Rg2TiuxtXAby.png )	
+	    
+      (Application Containers Example Image: https://pasteboard.co/Rg2TiuxtXAby.png )	
     
 
 #	SERVICES
@@ -50,7 +51,8 @@ Endpoints: You can see available Rest endpoints through swagger link shared abov
 
 Curl commands: You can see available Curl commands on each representative swagger links when you make default request through swagger link.
 
-    invoice-service
+
+	invoice-service
   
 * Responsible of creating/updating invoice of given input data
 
