@@ -1,4 +1,4 @@
-# New Document# bcavus-invoice-app
+# bcavus-invoice-app
 Invoice Application that is responsible of saving and listing invoices.
 
 This github repository holds 3 Java Spring Applications (microservices) and build configurations
