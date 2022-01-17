@@ -1,6 +1,21 @@
 version: '3.7'
 
 services:
+  app-rabbitmq:
+    container_name: app-rabbitmq
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    restart:
+      on-failure
+    networks:
+      - invoice-network
+
+
   user-mongo-db:
     container_name: user-mongo-db
     image: mongo:latest
@@ -87,7 +102,7 @@ services:
     env_file:
       - .env.dev
     environment:
-      EXPENSE_LIMIT: ${EXPENSE_SERVICE_LIMIT}
+      EXPENSE-SERVICE_LIMIT: ${EXPENSE_SERVICE_LIMIT}
       SPRING_DATA_MONGODB_URI: mongodb://${EXPENSE_SERVICE_MONGO_DATABASE_USER}:${EXPENSE_SERVICE_MONGO_DATABASE_PASSWORD}@expense-mongo-db
       SPRING_DATA_MONGODB_DATABASE: ${EXPENSE_SERVICE_MONGO_DATABASE_NAME}
       SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: ${DEFAULT_MONGO_INITDB_ROOT_DB}

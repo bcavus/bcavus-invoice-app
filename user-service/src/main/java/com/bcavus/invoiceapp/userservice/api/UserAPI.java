@@ -49,8 +49,8 @@ public class UserAPI {
         return new ServiceResponse<UserDTO>().response(foundUserDTO);
     }
 
-    @GetMapping(path = { "/{email}" })
-    public ResponseEntity<APIResponse> getByEmail(@PathVariable(value = "email" ) @NonNull final String userEmail) {
+    @GetMapping(path = { "/" })
+    public ResponseEntity<APIResponse> getByEmail(@RequestParam(value = "email" ) @NonNull final String userEmail) {
 
         final UserDTO foundUserDTO = this.userService.getUserByEmail(userEmail);
 

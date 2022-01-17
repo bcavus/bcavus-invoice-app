@@ -9,7 +9,10 @@ import com.bcavus.invoiceapp.invoiceservice.dto.PaginationMetadata;
 import com.bcavus.invoiceapp.invoiceservice.dto.request.CreateInvoiceDTO;
 import com.bcavus.invoiceapp.invoiceservice.exception.NoInvoiceFoundException;
 import com.bcavus.invoiceapp.invoiceservice.model.Invoice;
+import com.bcavus.invoiceapp.invoiceservice.model.InvoiceStatus;
 import com.bcavus.invoiceapp.invoiceservice.repository.InvoiceRepository;
+import com.bcavus.invoiceapp.invoiceservice.service.messaging.message.InvoiceUserValidationMessage;
+import com.bcavus.invoiceapp.invoiceservice.service.messaging.producer.InvoiceMessageProducerService;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,9 @@ public class InvoiceServiceImpl implements InvoiceService{
     private final InvoiceDomain invoiceDomain;
 
     @Autowired
+    private final InvoiceMessageProducerService<InvoiceUserValidationMessage> invoiceMessageProducerService;
+
+    @Autowired
     private final ModelMapper modelMapper;
 
     @Autowired
@@ -41,10 +47,12 @@ public class InvoiceServiceImpl implements InvoiceService{
 
     public InvoiceServiceImpl(InvoiceRepository invoiceRepository,
                               InvoiceDomain invoiceDomain,
+                              InvoiceMessageProducerService<InvoiceUserValidationMessage> invoiceMessageProducerService,
                               ModelMapper modelMapper,
                               ModelConverter modelConverter) {
         this.invoiceRepository = invoiceRepository;
         this.invoiceDomain = invoiceDomain;
+        this.invoiceMessageProducerService = invoiceMessageProducerService;
         this.modelMapper = modelMapper;
         this.modelConverter = modelConverter;
     }
@@ -55,6 +63,13 @@ public class InvoiceServiceImpl implements InvoiceService{
         Invoice createdInvoice = this.invoiceRepository.insert(this.modelConverter.convertToInvoice(createInvoiceDTO));
 
         logger.info("[InvoiceService/createInvoice]: Successfully created invoice: " + createdInvoice);
+
+        this.invoiceMessageProducerService.sendMessage(InvoiceUserValidationMessage.builder()
+                .invoiceId(createdInvoice.getId())
+                .userEmail(createdInvoice.getEmail())
+                .expenseAmount(createdInvoice.getAmount())
+                .valid(false)
+                .build());
 
         return this.modelMapper.mapToInvoiceDTO(createdInvoice);
     }
@@ -104,6 +119,20 @@ public class InvoiceServiceImpl implements InvoiceService{
                         .total(pagedInvoices.getTotalElements())
                         .build())
                 .build();
+    }
+
+    @Override
+    public InvoiceDTO updateInvoiceStatusById(@NonNull String invoiceId, @NonNull InvoiceStatus status) {
+
+        InvoiceDTO foundInvoice = this.getInvoiceById(invoiceId);
+
+        InvoiceDTO updatedInvoiceDTO = this.invoiceDomain.updateInvoiceStatus(status, foundInvoice);
+
+        Invoice updatedInvoice = this.invoiceRepository.save(this.modelConverter.convertToInvoice(updatedInvoiceDTO));
+
+        logger.info("[InvoiceService/updateInvoiceStatusById]: Successfully updated invoice with given id: " + invoiceId);
+
+        return this.modelMapper.mapToInvoiceDTO(updatedInvoice);
     }
 
 }

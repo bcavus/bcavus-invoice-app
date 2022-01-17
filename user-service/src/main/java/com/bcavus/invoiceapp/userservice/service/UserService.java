@@ -10,4 +10,6 @@ public interface UserService {
     UserDTO getUserById(String userId);
     UserDTO getUserByEmail(String email);
     PaginatedUsersDTO getAllUsers(PaginationMetadata metadata);
+
+    void validateUserExpense(String invoiceId, String email, Integer expenseAmount);
 }

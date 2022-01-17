@@ -11,6 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @NoArgsConstructor
 @Configuration
 public class ExpenseServiceConfiguration {
-    @Value("${expense.limit}")
+    @Value("${expense-service.limit}")
     private String limit;
 }

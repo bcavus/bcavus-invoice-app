@@ -11,6 +11,10 @@ import com.bcavus.invoiceapp.userservice.exception.NoSuchUserFound;
 import com.bcavus.invoiceapp.userservice.exception.UserAlreadyExistsException;
 import com.bcavus.invoiceapp.userservice.model.User;
 import com.bcavus.invoiceapp.userservice.repository.UserRepository;
+import com.bcavus.invoiceapp.userservice.service.messaging.message.UserExpenseCreationMessage;
+import com.bcavus.invoiceapp.userservice.service.messaging.message.UserExpenseValidationMessage;
+import com.bcavus.invoiceapp.userservice.service.messaging.producer.UserExpenseCreationProducerService;
+import com.bcavus.invoiceapp.userservice.service.messaging.producer.UserExpenseValidationProducerService;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +38,12 @@ public class UserServiceImpl implements UserService{
     private final UserDomain userDomain;
 
     @Autowired
+    private final UserExpenseCreationProducerService<UserExpenseCreationMessage> userExpenseCreationProducer;
+
+    @Autowired
+    private final UserExpenseValidationProducerService<UserExpenseValidationMessage> userExpenseValidationProducer;
+
+    @Autowired
     private final ModelMapper modelMapper;
 
     @Autowired
@@ -41,10 +51,14 @@ public class UserServiceImpl implements UserService{
 
     public UserServiceImpl(UserRepository userRepository,
                            UserDomain userDomain,
+                           UserExpenseCreationProducerService<UserExpenseCreationMessage> userExpenseCreationProducer,
+                           UserExpenseValidationProducerService<UserExpenseValidationMessage> userExpenseValidationProducer,
                            ModelMapper modelMapper,
                            ModelConverter modelConverter) {
         this.userRepository = userRepository;
-        this.userDomain =userDomain;
+        this.userDomain = userDomain;
+        this.userExpenseCreationProducer = userExpenseCreationProducer;
+        this.userExpenseValidationProducer = userExpenseValidationProducer;
         this.modelMapper = modelMapper;
         this.modelConverter = modelConverter;
     }
@@ -62,6 +76,8 @@ public class UserServiceImpl implements UserService{
                 });
 
         User createdUser = this.userRepository.insert(this.modelConverter.convertToUserModel(user.get()));
+
+        this.userExpenseCreationProducer.sendMessage(UserExpenseCreationMessage.builder().userid(createdUser.getId()).build());
 
         logger.info("[UserService/createUser]: Successfully created a user " + createdUser);
 
@@ -140,5 +156,17 @@ public class UserServiceImpl implements UserService{
                         .total(pagedUsers.getTotalElements())
                         .build())
                 .build();
+    }
+
+    @Override
+    public void validateUserExpense(String invoiceId, String email, Integer expenseAmount) {
+
+        UserDTO foundUser = this.getUserByEmail(email);
+
+        this.userExpenseValidationProducer.sendMessage(UserExpenseValidationMessage.builder()
+                .invoiceId(invoiceId)
+                .userId(foundUser.getId())
+                .expenseAmount(expenseAmount)
+                .build());
     }
 }
