@@ -11,6 +11,9 @@ import com.bcavus.invoiceapp.expenseservice.exception.NoExpenseFoundException;
 import com.bcavus.invoiceapp.expenseservice.exception.NotEnoughExpenseBudgetException;
 import com.bcavus.invoiceapp.expenseservice.model.Expense;
 import com.bcavus.invoiceapp.expenseservice.repository.ExpenseRepository;
+import com.bcavus.invoiceapp.expenseservice.service.messaging.message.InvoiceExpenseValidationMessage;
+import com.bcavus.invoiceapp.expenseservice.service.messaging.producer.ExpenseMessageProducerService;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,9 @@ public class ExpenseServiceImpl implements ExpenseService{
     private final ExpenseServiceConfiguration expenseServiceConfiguration;
 
     @Autowired
+    private final ExpenseMessageProducerService<InvoiceExpenseValidationMessage> expenseMessageProducerService;
+
+    @Autowired
     private final ModelMapper modelMapper;
 
     @Autowired
@@ -40,11 +46,13 @@ public class ExpenseServiceImpl implements ExpenseService{
     public ExpenseServiceImpl(ExpenseRepository expenseRepository,
                               ExpenseDomain expenseDomain,
                               ExpenseServiceConfiguration expenseServiceConfiguration,
+                              ExpenseMessageProducerService<InvoiceExpenseValidationMessage> expenseMessageProducerService,
                               ModelMapper modelMapper,
                               ModelConverter modelConverter) {
         this.expenseRepository = expenseRepository;
         this.expenseDomain = expenseDomain;
         this.expenseServiceConfiguration = expenseServiceConfiguration;
+        this.expenseMessageProducerService = expenseMessageProducerService;
         this.modelMapper = modelMapper;
         this.modelConverter = modelConverter;
     }
@@ -126,7 +134,7 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public ExpenseDTO spendAmountFromExpenseBudgetByUserId(String userId, Integer amountToBeSpend) {
+    public ExpenseDTO spendAmountFromExpenseBudgetByUserId(@NonNull String userId, @NonNull Integer amountToBeSpend) {
         ExpenseDTO foundExpense = this.getExpenseByUserId(userId);
 
         if(!this.expenseDomain.hasEnoughBudget(foundExpense,amountToBeSpend)) {
@@ -142,5 +150,24 @@ public class ExpenseServiceImpl implements ExpenseService{
         logger.info("[ExpenseService/spendAmountFromExpenseBudgetByUserId]: Successfully spent amount from expense: " + updatedExpense);
 
         return this.modelMapper.mapToExpenseDTO(updatedExpense);
+    }
+
+    @Override
+    public void validateExpense(String invoiceId, String userId, Integer amount) {
+        boolean isExpenseValidated = false;
+
+        try{
+            ExpenseDTO validatedExpense = this.spendAmountFromExpenseBudgetByUserId(userId,amount);
+            isExpenseValidated = true;
+
+            logger.info("[ExpenseService/validateExpense]: Validation success: " + validatedExpense);
+        }catch (NotEnoughExpenseBudgetException ex) {
+            logger.warn("[ExpenseService/validateExpense]: Validation failed: " + ex.getMessage());
+        }
+
+        this.expenseMessageProducerService.sendMessage(InvoiceExpenseValidationMessage.builder()
+                .invoiceId(invoiceId)
+                .available(isExpenseValidated)
+                .build());
     }
 }

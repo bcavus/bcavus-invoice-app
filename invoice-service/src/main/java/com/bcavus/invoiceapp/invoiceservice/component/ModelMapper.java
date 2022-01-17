@@ -10,7 +10,7 @@ public class ModelMapper {
     public InvoiceDTO mapToInvoiceDTO(Invoice invoice) {
         return InvoiceDTO.builder()
                 .id(invoice.getId())
-                .status(invoice.getStatus())
+                .status(invoice.getStatus().name())
                 .firstName(invoice.getFirstName())
                 .lastName(invoice.getLastName())
                 .email(invoice.getEmail())
