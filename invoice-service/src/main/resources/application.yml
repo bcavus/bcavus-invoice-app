@@ -21,14 +21,16 @@ spring:
 
 invoice-service:
   rabbitmq:
-    user:
-      validation-queue: user-validation-queue
-      exchange: user-validation-exchange
-      routingkey: user-validate
-    expense:
-      validation-queue: expense-validation-queue
-      exchange: expense-validation-exchange
-      routingkey: expense-validate
+    producer:
+      user:
+        validation-queue: user-validation-queue
+        exchange: user-validation-exchange
+        routingkey: user-validate
+    consumer:
+      expense:
+        validation-queue: invoice-validation-queue
+        exchange: invoice-validation-exchange
+        routingkey: invoice-validate
 
 server:
   port: 8083

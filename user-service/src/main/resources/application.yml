@@ -21,14 +21,20 @@ spring:
 
 user-service:
   rabbitmq:
-    user:
-      creation-queue: user-creation-queue
-      exchange: user-creation-exchange
-      routingkey: user-create
-    expense:
-      validation-queue: expense-validation-queue
-      exchange: expense-validation-exchange
-      routingkey: expense-validate
+    producer:
+      user:
+        creation-queue: user-creation-queue
+        exchange: user-creation-exchange
+        routingkey: user-create
+      expense:
+        validation-queue: expense-validation-queue
+        exchange: expense-validation-exchange
+        routingkey: expense-validate
+    consumer:
+      invoice:
+        validation-queue: user-validation-queue
+        exchange: user-validation-exchange
+        routingkey: user-validate
 
 server:
   port: 8081

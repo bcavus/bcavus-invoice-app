@@ -16,22 +16,22 @@ import org.springframework.messaging.handler.annotation.support.DefaultMessageHa
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${invoice-service.rabbitmq.user.validation-queue}")
+    @Value("${invoice-service.rabbitmq.producer.user.validation-queue}")
     private String userValidationQueue;
 
-    @Value("${invoice-service.rabbitmq.expense.validation-queue}")
-    private String expenseValidationQueue;
-
-    @Value("${invoice-service.rabbitmq.user.exchange}")
+    @Value("${invoice-service.rabbitmq.producer.user.exchange}")
     private String userValidationExchange;
 
-    @Value("${invoice-service.rabbitmq.expense.exchange}")
-    private String expenseValidationExchange;
-
-    @Value("${invoice-service.rabbitmq.user.routingkey}")
+    @Value("${invoice-service.rabbitmq.producer.user.routingkey}")
     private String userValidationKey;
 
-    @Value("${invoice-service.rabbitmq.expense.routingkey}")
+    @Value("${invoice-service.rabbitmq.consumer.expense.validation-queue}")
+    private String expenseValidationQueue;
+
+    @Value("${invoice-service.rabbitmq.consumer.expense.exchange}")
+    private String expenseValidationExchange;
+
+    @Value("${invoice-service.rabbitmq.consumer.expense.routingkey}")
     private String expenseValidationKey;
 
     @Bean

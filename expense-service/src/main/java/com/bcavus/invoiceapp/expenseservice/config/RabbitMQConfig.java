@@ -16,23 +16,35 @@ import org.springframework.messaging.handler.annotation.support.DefaultMessageHa
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${expense-service.rabbitmq.user.creation-queue}")
-    private String userCreationQueue;
-
-    @Value("${expense-service.rabbitmq.user.exchange}")
-    private String userCreationExchange;
-
-    @Value("${expense-service.rabbitmq.user.routingkey}")
-    private String userCreationKey;
-
-    @Value("${expense-service.rabbitmq.invoice.validation-queue}")
+    @Value("${expense-service.rabbitmq.producer.invoice.validation-queue}")
     private String invoiceValidationQueue;
 
-    @Value("${expense-service.rabbitmq.invoice.exchange}")
+    @Value("${expense-service.rabbitmq.producer.invoice.exchange}")
     private String invoiceValidationExchange;
 
-    @Value("${expense-service.rabbitmq.invoice.routingkey}")
+    @Value("${expense-service.rabbitmq.producer.invoice.routingkey}")
     private String invoiceValidationKey;
+
+    @Value("${expense-service.rabbitmq.consumer.user.creation-queue}")
+    private String userCreationQueue;
+
+    @Value("${expense-service.rabbitmq.consumer.user.exchange}")
+    private String userCreationExchange;
+
+    @Value("${expense-service.rabbitmq.consumer.user.routingkey}")
+    private String userCreationKey;
+
+    @Value("${expense-service.rabbitmq.consumer.expense.validation-queue}")
+    private String expenseValidationQueue;
+
+    @Value("${expense-service.rabbitmq.consumer.expense.exchange}")
+    private String expenseValidationExchange;
+
+    @Value("${expense-service.rabbitmq.consumer.expense.routingkey}")
+    private String expenseValidationKey;
+
+    @Bean
+    public Queue invoiceValidation() { return new Queue(this.getInvoiceValidationQueueName(), true); }
 
     @Bean
     public Queue userCreation() {
@@ -40,7 +52,10 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue invoiceValidation() { return new Queue(this.getInvoiceValidationQueueName(), true); }
+    public Queue expenseValidation() { return new Queue(this.getExpenseValidationQueueName(), true); }
+
+    @Bean
+    public TopicExchange getInvoiceValidationExchangeName() { return new TopicExchange(this.getInvoiceValidationExchange()); }
 
     @Bean
     public TopicExchange getUserCreationExchangeName() {
@@ -48,7 +63,15 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public TopicExchange getInvoiceValidationExchangeName() { return new TopicExchange(this.getInvoiceValidationExchange()); }
+    public TopicExchange getExpenseValidationExchangeName() { return new TopicExchange(this.getExpenseValidationExchange()); }
+
+    @Bean
+    public Binding invoiceValidationBinding() {
+        return BindingBuilder
+                .bind(this.invoiceValidation())
+                .to(this.getInvoiceValidationExchangeName())
+                .with(this.getInvoiceValidationKey());
+    }
 
     @Bean
     public Binding userCreationBinding() {
@@ -59,11 +82,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding invoiceValidationBinding() {
+    public Binding expenseValidationBinding() {
         return BindingBuilder
-                .bind(this.invoiceValidation())
-                .to(this.getInvoiceValidationExchangeName())
-                .with(this.getInvoiceValidationKey());
+                .bind(this.expenseValidation())
+                .to(this.getExpenseValidationExchangeName())
+                .with(this.getExpenseValidationKey());
     }
 
     @Bean
@@ -91,16 +114,21 @@ public class RabbitMQConfig {
         return factory;
     }
 
-    public String getUserCreationQueueName() { return this.userCreationQueue; }
-
-    public String getUserCreationExchange() { return this.userCreationExchange; }
-
-    public String getUserCreationKey() { return this.userCreationKey; }
-
     public String getInvoiceValidationQueueName() { return this.invoiceValidationQueue; }
 
     public String getInvoiceValidationExchange() { return this.invoiceValidationExchange; }
 
     public String getInvoiceValidationKey() { return this.invoiceValidationKey; }
 
+    public String getUserCreationQueueName() { return this.userCreationQueue; }
+
+    public String getUserCreationExchange() { return this.userCreationExchange; }
+
+    public String getUserCreationKey() { return this.userCreationKey; }
+
+    public String getExpenseValidationQueueName() { return this.expenseValidationQueue; }
+
+    public String getExpenseValidationExchange() { return this.expenseValidationExchange; }
+
+    public String getExpenseValidationKey() { return this.expenseValidationKey; }
 }
