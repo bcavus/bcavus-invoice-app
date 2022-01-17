@@ -15,11 +15,14 @@ Build configurations:
      *	Open project directory (this directory)
      *  Run `docker-compose --env-file .dev.env build --no-cache` . This will build all aplications that is attached to the compose file with given env variables
      *  When docker stopped building, Run `docker-compose --env-file .env.dev up` . This will start the docker containers that is builded successfully.
-	- If this process is successfull, you should be able to see following containers up & running.
-            -	app-rabbitmq
-	    -   user-service, user-mongo-db
-            -   expense-service, expense-mongo-db
-            -   invoice-service, invoice-mongo-db
+     *  If this process is successfull, you should be able to see following containers up & running.
+	app-rabbitmq,
+	user-service,
+	user-mongo-db,
+        expense-service,
+	expense-mongo-db,
+        invoice-service,
+	invoice-mongo-db.
 	    
       (Application Containers Example Image: https://pasteboard.co/Rg2TiuxtXAby.png )	
     
