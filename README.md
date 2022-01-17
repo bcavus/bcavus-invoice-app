@@ -67,3 +67,38 @@ Endpoints: You can see available Rest endpoints through swagger link shared abov
 
 Curl commands: You can see available Curl commands on each representative swagger links when you make default request through swagger link.
 
+#     DATABASES
+
+	user-service-db
+	
+Database server that is responsible of executing `user-service` storage instructions.
+
+Type: MongoDB
+Collections: `users`
+Users: `admin`, `api_user_service`
+
+	expense-service-db
+	
+Database server that is responsible of executing `expense-service` storage instructions.
+
+Type: MongoDB
+Collections: `expenses`
+Users: `admin`, `api_expense_service`
+
+	invoice-service-db
+
+Database server that is responsible of executing `invoice-service` storage instructions.
+
+Type: MongoDB
+Collections: `invoices`
+Users: `admin`, `api_invoice_service`
+
+# 	MESSAGING
+
+	app-rabbitmq
+Messaging Queue Server that is responsible of distributing & persisting messages to the given queues.
+
+Type: RabbitMQ
+Active Queues: user-creation-queue, user-validation-queue, expense-validation-queue, invoice-validation-queue.
+
+Image of RabbitMQ : (https://pasteboard.co/p7KFOzBwkFw7.png)
