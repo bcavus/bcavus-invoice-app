@@ -36,7 +36,7 @@ public class ExpenseAPI {
     }
 
     @GetMapping(path = { "/" })
-    public ResponseEntity<APIResponse> getByUserId(@RequestParam(value = "user") @NonNull final String userId) {
+    public ResponseEntity<APIResponse> getByUserId(@RequestParam(value = "userid") @NonNull final String userId) {
         final ExpenseDTO foundExpenseDTO = this.expenseService.getExpenseByUserId(userId);
 
         logger.info("[ExpenseAPI/getByUserId]: " + userId);

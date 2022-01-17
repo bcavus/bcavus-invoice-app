@@ -1,4 +1,3 @@
-
 mongo -- "$MONGO_INITDB_DATABASE" <<EOF
     var root_user = '$MONGO_INITDB_ROOT_USERNAME';
     var root_pass = '$MONGO_INITDB_ROOT_PASSWORD';
