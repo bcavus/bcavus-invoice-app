@@ -1,8 +1,8 @@
-package com.bcavus.invoiceapp.invoiceservice.service.messaging;
+package com.bcavus.invoiceapp.expenseservice.service.messaging;
 
-import com.bcavus.invoiceapp.invoiceservice.config.RabbitMQConfig;
-import com.bcavus.invoiceapp.invoiceservice.service.messaging.message.InvoiceUserValidationMessage;
-import com.bcavus.invoiceapp.invoiceservice.service.messaging.message.RabbitMessage;
+import com.bcavus.invoiceapp.expenseservice.config.RabbitMQConfig;
+import com.bcavus.invoiceapp.expenseservice.service.messaging.message.InvoiceExpenseValidationMessage;
+import com.bcavus.invoiceapp.expenseservice.service.messaging.message.RabbitMessage;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
@@ -26,12 +26,12 @@ public abstract class AbstractRabbitMQConnection implements RabbitMQMessageSende
     @Override
     public boolean sendMessage(RabbitMessage message) throws IllegalArgumentException {
 
-        if(message instanceof InvoiceUserValidationMessage){
+        if(message instanceof InvoiceExpenseValidationMessage) {
 
             return this.sendMessageToQueue(
-                    rabbitMQConfig.getUserValidationQueueName(),
-                    rabbitMQConfig.getUserValidationExchange(),
-                    rabbitMQConfig.getUserValidationKey(),
+                    rabbitMQConfig.getInvoiceValidationQueueName(),
+                    rabbitMQConfig.getInvoiceValidationExchange(),
+                    rabbitMQConfig.getInvoiceValidationKey(),
                     message);
         }
 

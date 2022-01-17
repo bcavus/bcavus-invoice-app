@@ -1,4 +1,4 @@
-package com.bcavus.invoiceapp.expenseservice.dto.message;
+package com.bcavus.invoiceapp.expenseservice.service.messaging.message;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,7 +15,12 @@ import lombok.experimental.Accessors;
 @ToString
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserExpenseCreationMessage extends RabbitMessage {
-    @JsonProperty(value = "userid", required = true)
-    private String userid;
+public class InvoiceExpenseValidationMessage extends RabbitMessage {
+
+    @JsonProperty(value = "invoiceid", required = true)
+    private String invoiceId;
+
+    @JsonProperty(value = "available", required = true)
+    private boolean available;
+
 }

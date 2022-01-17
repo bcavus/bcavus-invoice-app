@@ -7,17 +7,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserMessageProducerServiceImpl extends AbstractRabbitMQConnection implements UserMessageProducerService<UserExpenseCreationMessage> {
+public class UserExpenseCreationProducerServiceImpl extends AbstractRabbitMQConnection implements UserExpenseCreationProducerService<UserExpenseCreationMessage> {
 
-    private final Logger logger = LoggerFactory.getLogger(UserMessageProducerServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(UserExpenseCreationProducerServiceImpl.class);
 
-    public UserMessageProducerServiceImpl() {
+    public UserExpenseCreationProducerServiceImpl() {
         super();
     }
 
     @Override
     public boolean sendMessage(UserExpenseCreationMessage userValidationMessage) {
-        logger.info("[UserMessageProducerService/sendMessage]: Sending Message = " + userValidationMessage);
+        logger.info("[UserExpenseCreationProducerService/sendMessage]: Sending Message = " + userValidationMessage);
 
         return super.sendMessage(userValidationMessage);
     }

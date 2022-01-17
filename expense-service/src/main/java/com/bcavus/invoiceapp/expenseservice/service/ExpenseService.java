@@ -8,4 +8,6 @@ public interface ExpenseService {
     ExpenseDTO getExpenseByUserId(String userId);
 
     ExpenseDTO spendAmountFromExpenseBudgetByUserId(String userId, Integer amountToBeSpend);
+
+    void validateExpense(String invoiceId, String userId, Integer amount);
 }

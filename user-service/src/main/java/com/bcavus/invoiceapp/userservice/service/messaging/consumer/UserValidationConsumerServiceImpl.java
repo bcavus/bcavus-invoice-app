@@ -1,6 +1,5 @@
 package com.bcavus.invoiceapp.userservice.service.messaging.consumer;
 
-import com.bcavus.invoiceapp.userservice.dto.UserDTO;
 import com.bcavus.invoiceapp.userservice.service.UserService;
 import com.bcavus.invoiceapp.userservice.service.messaging.message.InvoiceUserValidationMessage;
 import org.slf4j.Logger;
@@ -25,18 +24,10 @@ public class UserValidationConsumerServiceImpl implements UserValidationConsumer
     @RabbitListener(queues = "user-validation-queue")
     public void receiveMessage(InvoiceUserValidationMessage invoiceUserValidationMessage) {
 
-        String userEmail = invoiceUserValidationMessage.getUserEmail();
-
         try{
-            UserDTO foundUser = this.userService.getUserByEmail(userEmail);
-
-            /*
-                this.sendMessage(UserExpenseValidationMessage.builder()
-                    .invoiceId(message.getInvoiceId())
-                    .userId(foundUser.get().getId())
-                    .expenseAmount(message.getExpenseAmount())
-                    .build());
-             */
+            this.userService.validateUserExpense(invoiceUserValidationMessage.getInvoiceId(),
+                    invoiceUserValidationMessage.getUserEmail(),
+                    invoiceUserValidationMessage.getExpenseAmount());
 
             logger.info("[UserValidationConsumerService/receiveMessage]: Successfully validated user with given message: " + invoiceUserValidationMessage);
         }catch (Exception ex) {
